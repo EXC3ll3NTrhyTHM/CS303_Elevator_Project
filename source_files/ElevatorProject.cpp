@@ -3,36 +3,97 @@
 
 #include <iostream>
 #include "queue.h"
+#include "circular_queue.h"
 #include <string>
+#include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
 int main()
 {
-    cout << "Hola!\n";
+	const int ELEVATOR_CAPACITY = 10;
+	const int STARTING_FLOOR = 0;
+	int personCurrentFloor;
+	int personDesiredFloor;
+	int elevatorCurrentFloor;
+	string elevatorDirection;
 
-	queue<string> names;
-	names.push("Rich");
-	names.push("Debbie");
-	names.push("Robin");
-	names.push("Dustin");
-	names.push("Jonathan");
+	// Below is seeded random number generation using the system time to reset the seed every execution to ensure the number generated is truely random.
+	// Also the static_cast thing is used here because the time() function returns a slightly different data type than what srand() is expecting causing C++ to dynamically type cast the returned value which threw an warning when the program was ran. Using the static_cast() function makes the casting handled by the program and not the compiler so that the warning message does not display.
+	srand(static_cast<unsigned int>(time(NULL)));
 
-	string first = names.front();
+	elevatorCurrentFloor = STARTING_FLOOR;
+	int numberOfPeopleWantingOnElevator = (rand() % 50) + 1;
+	cout << "People in the building: " << numberOfPeopleWantingOnElevator << endl;
 
-	names.pop();
-	names.push("Philip");
+	// Assign people wanting on elevator a current floor and desired floor.
+	for (int i = 0; i < numberOfPeopleWantingOnElevator; i++) {
+		// Create an array of people with values for desired floor and current floor
+	}
 
-	system("pause");
+	// Declaring a circular queue. The size of the queue (10) represents the elevator weight capacity converted to number of people.
+	CQ::queue<int> elevator(ELEVATOR_CAPACITY);
+
+	while (numberOfPeopleWantingOnElevator > 0) {
+		personCurrentFloor = (rand() % 10) + 1;
+
+		// Do-while ensures desired floor is not the current floor
+		do {
+			personDesiredFloor = (rand() % 10) + 1;
+		} while (personDesiredFloor == personCurrentFloor);
+
+		// Case for elevator needing to travel up to get to person who pressed button
+		if (personCurrentFloor > elevatorCurrentFloor) {
+			elevatorDirection = "Up";
+			elevatorCurrentFloor = personCurrentFloor;
+			elevator.push(personDesiredFloor);
+			if (elevatorCurrentFloor > personDesiredFloor) {
+				elevatorDirection = "Up";
+				elevatorCurrentFloor = personDesiredFloor;
+				elevator.pop();
+				--numberOfPeopleWantingOnElevator;
+			}
+			else if (personCurrentFloor > elevatorCurrentFloor) {
+				elevatorDirection = "Down";
+				elevatorCurrentFloor = personDesiredFloor;
+				elevator.pop();
+				--numberOfPeopleWantingOnElevator;
+			}
+		}
+		// Case for elevator needing to travel down to get to person who pressed button
+		else if (personCurrentFloor < elevatorCurrentFloor) {
+			elevatorDirection = "Down";
+			elevatorCurrentFloor = personCurrentFloor;
+			elevator.push(personDesiredFloor);
+			if (elevatorCurrentFloor > personDesiredFloor) {
+				elevatorDirection = "Up";
+				elevatorCurrentFloor = personDesiredFloor;
+				elevator.pop();
+				--numberOfPeopleWantingOnElevator;
+			}
+			else if (personCurrentFloor > elevatorCurrentFloor) {
+				elevatorDirection = "Down";
+				elevatorCurrentFloor = personDesiredFloor;
+				elevator.pop();
+				--numberOfPeopleWantingOnElevator;
+			}
+		}
+		// Case for elevator not needing to travel to get to person who pressed button
+		else {
+			elevator.push(personDesiredFloor);
+			if (elevatorCurrentFloor > personDesiredFloor) {
+				elevatorDirection = "Up";
+				elevatorCurrentFloor = personDesiredFloor;
+				elevator.pop();
+				--numberOfPeopleWantingOnElevator;
+			}
+			else if (personCurrentFloor > elevatorCurrentFloor) {
+				elevatorDirection = "Down";
+				elevatorCurrentFloor = personDesiredFloor;
+				elevator.pop();
+				--numberOfPeopleWantingOnElevator;
+			}
+		}
+	}
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
