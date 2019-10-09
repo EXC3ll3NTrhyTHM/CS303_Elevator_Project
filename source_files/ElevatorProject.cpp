@@ -2,98 +2,76 @@
 //
 
 #include <iostream>
-#include "queue.h"
-#include "circular_queue.h"
 #include <string>
 #include <cstdlib>
 #include <ctime>
-
-using namespace std;
+#include "person.h"
+#include "vector.h"
+#include "elevator.h"
 
 int main()
 {
-	const int ELEVATOR_CAPACITY = 10;
-	const int STARTING_FLOOR = 0;
+	const int STARTING_FLOOR = 1; 
 	int personCurrentFloor;
 	int personDesiredFloor;
 	int elevatorCurrentFloor;
-	string elevatorDirection;
+	int waitTime;
+	std::string elevatorDirection;
+	KW::vector<person> waitingList;
+	elevator Elevator;
+	int i;
 
-	// Below is seeded random number generation using the system time to reset the seed every execution to ensure the number generated is truely random.
-	// Also the static_cast thing is used here because the time() function returns a slightly different data type than what srand() is expecting causing C++ to dynamically type cast the returned value which threw an warning when the program was ran. Using the static_cast() function makes the casting handled by the program and not the compiler so that the warning message does not display.
-	srand(static_cast<unsigned int>(time(NULL)));
+	srand(static_cast<unsigned int>(time(NULL)));// Random number generator seed
 
 	elevatorCurrentFloor = STARTING_FLOOR;
-	int numberOfPeopleWantingOnElevator = (rand() % 50) + 1;
-	cout << "People in the building: " << numberOfPeopleWantingOnElevator << endl;
+	int numberOfPeopleWantingOnElevator = (rand() % 99) + 1;// Picks random number between 1 and 100
+	std::cout << "People in the building trying to get on elevator: " << numberOfPeopleWantingOnElevator << std::endl;
 
-	// Assign people wanting on elevator a current floor and desired floor.
+	// Create a vector of people with values for desired floor and current floor
 	for (int i = 0; i < numberOfPeopleWantingOnElevator; i++) {
-		// Create an array of people with values for desired floor and current floor
-	}
-
-	// Declaring a circular queue. The size of the queue (10) represents the elevator weight capacity converted to number of people.
-	CQ::queue<int> elevator(ELEVATOR_CAPACITY);
-
-	while (numberOfPeopleWantingOnElevator > 0) {
-		personCurrentFloor = (rand() % 10) + 1;
+		personCurrentFloor = (rand() % 9) + 1;
 
 		// Do-while ensures desired floor is not the current floor
 		do {
-			personDesiredFloor = (rand() % 10) + 1;
+			personDesiredFloor = (rand() % 9) + 1; 
 		} while (personDesiredFloor == personCurrentFloor);
+		waitingList.push_back(person(personCurrentFloor, personDesiredFloor));
+	}
+	
+	while (waitingList.size() > 0) {
 
-		// Case for elevator needing to travel up to get to person who pressed button
-		if (personCurrentFloor > elevatorCurrentFloor) {
-			elevatorDirection = "Up";
-			elevatorCurrentFloor = personCurrentFloor;
-			elevator.push(personDesiredFloor);
-			if (elevatorCurrentFloor > personDesiredFloor) {
-				elevatorDirection = "Up";
-				elevatorCurrentFloor = personDesiredFloor;
-				elevator.pop();
-				--numberOfPeopleWantingOnElevator;
-			}
-			else if (personCurrentFloor > elevatorCurrentFloor) {
-				elevatorDirection = "Down";
-				elevatorCurrentFloor = personDesiredFloor;
-				elevator.pop();
-				--numberOfPeopleWantingOnElevator;
-			}
+		// Travels to current floor of next person in waitingList vector
+	/************************************************************************************************************/
+		Elevator.setTargetFloor(waitingList[0].currentFloor);
+		if (Elevator.currentFloor < Elevator.targetFloor) {
+			Elevator.moveUpAndCheckEachFloor(waitingList);
 		}
-		// Case for elevator needing to travel down to get to person who pressed button
-		else if (personCurrentFloor < elevatorCurrentFloor) {
-			elevatorDirection = "Down";
-			elevatorCurrentFloor = personCurrentFloor;
-			elevator.push(personDesiredFloor);
-			if (elevatorCurrentFloor > personDesiredFloor) {
-				elevatorDirection = "Up";
-				elevatorCurrentFloor = personDesiredFloor;
-				elevator.pop();
-				--numberOfPeopleWantingOnElevator;
-			}
-			else if (personCurrentFloor > elevatorCurrentFloor) {
-				elevatorDirection = "Down";
-				elevatorCurrentFloor = personDesiredFloor;
-				elevator.pop();
-				--numberOfPeopleWantingOnElevator;
-			}
+		else if (Elevator.currentFloor > Elevator.targetFloor) {
+			Elevator.moveDownAndCheckEachFloor(waitingList);
 		}
-		// Case for elevator not needing to travel to get to person who pressed button
-		else {
-			elevator.push(personDesiredFloor);
-			if (elevatorCurrentFloor > personDesiredFloor) {
-				elevatorDirection = "Up";
-				elevatorCurrentFloor = personDesiredFloor;
-				elevator.pop();
-				--numberOfPeopleWantingOnElevator;
-			}
-			else if (personCurrentFloor > elevatorCurrentFloor) {
-				elevatorDirection = "Down";
-				elevatorCurrentFloor = personDesiredFloor;
-				elevator.pop();
-				--numberOfPeopleWantingOnElevator;
-			}
+	/**********************************************************************************************************************/
+		// Current floor of next person in waitingList vector reached
+		Elevator.elevatorCarriage.push_back(waitingList[0]); // First person who pushed button now gets on
+		waitingList.erase(0);
+		int personWhoPushedButton = Elevator.elevatorCarriage.size() - 1;
+
+		// Travel to person desired floor
+		Elevator.setTargetFloor(Elevator.elevatorCarriage[personWhoPushedButton].desiredFloor);
+		if (Elevator.currentFloor < Elevator.targetFloor) {
+			Elevator.moveUpAndCheckEachFloor(waitingList);
+		}
+		else if (Elevator.currentFloor > Elevator.targetFloor) {
+			Elevator.moveDownAndCheckEachFloor(waitingList);		
+		}
+	}
+
+	// Checking that no one was left on the elevator
+	std::cout << "Waiting list size: " << waitingList.size() << std::endl;
+	std::cout << "Elevator carriage size: " << Elevator.elevatorCarriage.size() << std::endl;
+	if (Elevator.elevatorCarriage.size() > 0) {
+		std::cout << "Elevator current floor: " << Elevator.currentFloor << std::endl;
+		for (int i = 0; i < Elevator.elevatorCarriage.size(); i++) {
+			std::cout << "Current floor: " << Elevator.elevatorCarriage[i].currentFloor << " Desired Floor: " << Elevator.elevatorCarriage[i].desiredFloor << std::endl;
 		}
 	}
 }
