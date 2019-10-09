@@ -23,8 +23,6 @@ public:
 	
 	void moveDownAndCheckEachFloor(KW::vector<person> waitingList);
 
-	void checkWaitingListAndFloor(KW::vector<person> waitingList);
-
 	void getsOnElevator(person p) {
 		elevatorCarriage.push_back(p);
 	}
@@ -107,44 +105,6 @@ void elevator::moveDownAndCheckEachFloor(KW::vector<person> waitingList) {
 			}
 		}
 		setCurrentFloor(currentFloor -= 1);
-	}
-	if (currentFloor == targetFloor) {
-		i = 0;
-		while (i < elevatorCarriage.size()) {
-			if (elevatorCarriage[i].desiredFloor == currentFloor) {
-				elevatorCarriage.erase(i);
-			}
-			else {
-				i++;
-			}
-		}
-	}
-}
-
-//To be determined if I can achieve this simplification
-void elevator::checkWaitingListAndFloor(KW::vector<person> waitingList) {
-	int i;
-	while (currentFloor != targetFloor) {
-		i = 0;
-		while (i < waitingList.size()) {
-			if (currentFloor == waitingList[i].currentFloor && targetFloor >= waitingList[i].desiredFloor && currentFloor < waitingList[i].desiredFloor) {// If person is on current floor and wants to get off before target floor or at target floor, elevator picks them up
-				elevatorCarriage.push_back(waitingList[i]);
-				waitingList.erase(i);
-			}
-			else {
-				i++;
-			}
-		}
-		i = 0;
-		while (i < elevatorCarriage.size()) {
-			if (elevatorCarriage[i].desiredFloor == currentFloor) {
-				elevatorCarriage.erase(i);
-			}
-			else {
-				i++;
-			}
-		}
-		setCurrentFloor(currentFloor += 1);
 	}
 	if (currentFloor == targetFloor) {
 		i = 0;
