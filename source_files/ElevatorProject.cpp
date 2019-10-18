@@ -68,6 +68,7 @@ int main()
 	// Checking that no one was left on the elevator
 	std::cout << "Waiting list size: " << waitingList.size() << std::endl;
 	std::cout << "Elevator carriage size: " << Elevator.elevatorCarriage.size() << std::endl;
+	std::cout << "Most floors traveled: " << Elevator.longestFloorsTraveled << std::endl;
 	if (Elevator.elevatorCarriage.size() > 0) {
 		std::cout << "Elevator current floor: " << Elevator.currentFloor << std::endl;
 		for (int i = 0; i < Elevator.elevatorCarriage.size(); i++) {

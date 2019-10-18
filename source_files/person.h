@@ -4,7 +4,7 @@ class person
 public:
 	int currentFloor;
 	int desiredFloor;
-	int waitTime;
+	int floorsTraveled;
 	person(int x, int y);
 	person();
 
@@ -30,7 +30,7 @@ void person::setDesiredFloor(int x) {
 }
 
 void person::setWaitTime(int x) {
-	waitTime = x;
+	floorsTraveled = x;
 }
 
 int person::getCurrentFloor() const {
@@ -42,17 +42,17 @@ int person::getDesiredFloor() const {
 }
 
 int person::getWaitTime() {
-	return waitTime;
+	return floorsTraveled;
 }
 
 person::person(int x, int y) {
 	currentFloor = x;
 	desiredFloor = y;
-	waitTime = 0;
+	floorsTraveled = 0;
 }
 
 person::person() {
 	currentFloor = 0;
 	desiredFloor = 0;
-	waitTime = 0;
+	floorsTraveled = 0;
 }
