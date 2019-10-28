@@ -4,8 +4,9 @@ class person
 public:
 	int currentFloor;
 	int desiredFloor;
+	int ID;
 	int floorsTraveled;
-	person(int x, int y);
+	person(int x, int y, int z);
 	person();
 
 	void setCurrentFloor(int x);
@@ -45,14 +46,16 @@ int person::getWaitTime() {
 	return floorsTraveled;
 }
 
-person::person(int x, int y) {
+person::person(int x, int y, int z) {
 	currentFloor = x;
 	desiredFloor = y;
+	ID = z;
 	floorsTraveled = 0;
 }
 
 person::person() {
 	currentFloor = 0;
 	desiredFloor = 0;
+	ID = 0;
 	floorsTraveled = 0;
 }

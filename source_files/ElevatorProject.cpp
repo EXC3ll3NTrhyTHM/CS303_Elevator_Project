@@ -15,17 +15,15 @@ int main()
 	int personCurrentFloor;
 	int personDesiredFloor;
 	int ID;
-	int elevatorCurrentFloor;
 	int waitTime;
 	std::string elevatorDirection;
 	KW::vector<person> waitingList;
 	elevator Elevator;
 	int i;
-	int k;
+	Elevator.currentFloor = STARTING_FLOOR;
+
 
 	srand(static_cast<unsigned int>(time(NULL)));// Random number generator seed
-
-	elevatorCurrentFloor = STARTING_FLOOR;
 	int numberOfPeopleWantingOnElevator = (rand() % 15 + 1);// Picks random number between 1 and 15
 	std::cout << "People in the building trying to get on elevator: " << numberOfPeopleWantingOnElevator << std::endl;
 
@@ -46,27 +44,28 @@ int main()
 		std::cout << "Person " << i + 1 << ": " << waitingList[i].currentFloor << " " << waitingList[i].desiredFloor << std::endl;
 	}
 
-	Elevator.direction = "Up"; //Since elevator is on the ground floor at the beginning of the program, set direction to "Up"
+	/*
+	Elevator starts
+	*/
 	while (waitingList.size() > 0) {
-
-		// Sets the target to the highest floor where sb. is waiting to get in.
-	/************************************************************************************************************/
-		k = waitingList[0].currentFloor;
-		for (int i = 0; i < waitingList.size(); i++) {
-			if (waitingList[i].currentFloor > k) {
-				k = waitingList[i].currentFloor;
-			}
-		}
-
-		Elevator.setTargetFloor(k);
+		Elevator.setTargetFloor(waitingList[0].currentFloor);
 		std::cout << "Target floor set to:" << Elevator.targetFloor << std::endl;
-		std::cout << "Current floor is: " << Elevator.currentFloor << std::endl;
-		if ((Elevator.currentFloor <= Elevator.targetFloor) && (Elevator.direction == "Up")) {
+		if (Elevator.currentFloor < Elevator.targetFloor) {
 			Elevator.moveUpAndCheckEachFloor(waitingList);
 		}
-		else {
+		else if (Elevator.currentFloor > Elevator.targetFloor) {
 			Elevator.moveDownAndCheckEachFloor(waitingList);
+		}
+		else if (Elevator.currentFloor == Elevator.targetFloor) {
+			Elevator.elevatorCarriage.push_back(waitingList[0]);
+			waitingList.erase(0);
+			Elevator.setTargetFloor(Elevator.elevatorCarriage[Elevator.elevatorCarriage.size() - 1].desiredFloor);
+			if (Elevator.currentFloor < Elevator.targetFloor) {
+				Elevator.moveDownAndCheckEachFloor(waitingList);
+			}
+			else {
+				Elevator.moveDownAndCheckEachFloor(waitingList);
+			}
 		}
 	}
 }
-/**********************************************************************************************************************/

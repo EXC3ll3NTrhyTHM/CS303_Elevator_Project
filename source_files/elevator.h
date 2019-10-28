@@ -19,9 +19,9 @@ public:
 
 	int getTargetFloor();
 
-	void moveUpAndCheckEachFloor(KW::vector<person> &waitingList); //Have to use pass by reference to get the vectors modified also outside of the functions.
+	void moveUpAndCheckEachFloor(KW::vector<person>& waitingList); //Have to use pass by reference to get the vectors modified also outside of the functions.
 
-	void moveDownAndCheckEachFloor(KW::vector<person> &waitingList);
+	void moveDownAndCheckEachFloor(KW::vector<person>& waitingList);
 
 	void getsOnElevator(person p) {
 		elevatorCarriage.push_back(p);
@@ -43,20 +43,23 @@ int elevator::getTargetFloor() {
 	return targetFloor;
 }
 
-void elevator::moveUpAndCheckEachFloor(KW::vector<person> &waitingList) {
+void elevator::moveUpAndCheckEachFloor(KW::vector<person>& waitingList) {
 	direction = "Up";
 	int i;
 	while (currentFloor <= targetFloor) {
-		setCurrentFloor(currentFloor += 1);
 		i = 0;
-		//Conditional people are getting onto the elevator
 		std::cout << "Current floor is: " << currentFloor << std::endl;
-		while (i < waitingList.size() && elevatorCarriage.size() < 10) {
-			if (currentFloor == waitingList[i].currentFloor && currentFloor < waitingList[i].desiredFloor) {// If person is on current floor and wants to get off before target floor or at target floor, elevator picks them up
+		/*
+		While loop for people getting onto the elevator
+		Checks everyone in the waiting list for if they are on the current floor of the elevator and if they want to go to a floor higher than the current floor
+		Doesnt allow final spot in elevator to be filled as that is reserved for the first person who pushed the button
+		*/
+		while (i < waitingList.size() && elevatorCarriage.size() < 9) {
+			if (currentFloor == waitingList[i].currentFloor && currentFloor < waitingList[i].desiredFloor) {// If person is on current floor and their desired floor is greater than the current floor, they get on
 				elevatorCarriage.push_back(waitingList[i]);
 				std::cout << "Got in ID : " << waitingList[i].ID << std::endl;
 				if (targetFloor < waitingList[i].desiredFloor) {
-					targetFloor = waitingList[i].desiredFloor; //Everytime sb. gets in check and set targetfloor to highest desired floor.
+					targetFloor = waitingList[i].desiredFloor; //Everytime sb. gets in, check and set targetfloor to highest desired floor.
 					std::cout << "Target floor is now : " << waitingList[i].desiredFloor << std::endl;
 				}
 				std::cout << "Popped off from the waitlist, ID : " << waitingList[i].ID << std::endl;
@@ -69,6 +72,7 @@ void elevator::moveUpAndCheckEachFloor(KW::vector<person> &waitingList) {
 			}
 
 		}
+
 		i = 0;
 		//People getting off the elevator
 		while (i < elevatorCarriage.size()) {
@@ -77,29 +81,26 @@ void elevator::moveUpAndCheckEachFloor(KW::vector<person> &waitingList) {
 				elevatorCarriage.erase(i);
 				std::cout << "Num of people in the elevator: " << elevatorCarriage.size() << std::endl;
 				std::cout << "Num of people in the waitlist: " << waitingList.size() << std::endl;
-				if ((elevatorCarriage.size() == 0) && (waitingList.size() == 0)) { //If there is no one left in the elevator, end program.
-					std::cout << "Nobody in the carriage and waitlist. End of program" << std::endl;
-					currentFloor = 0; //Elevator goesto ground floor when everybody gets off and there is no request because ground floor is the most used floor.
-					std::cout << "Elevator is back on the ground floor." << std::endl;
-					exit(0);
-				}
 			}
 
 			else {
 				i++;
 			}
 		}
+		/*
+		Moved this to bottom so that the floor the elevator started on is checked
+		*/
+		setCurrentFloor(currentFloor += 1);
 	}
 }
 
-void elevator::moveDownAndCheckEachFloor(KW::vector<person> &waitingList) {
+void elevator::moveDownAndCheckEachFloor(KW::vector<person>& waitingList) {
 	direction = "Down";// Elevator goes down
 	int i;
 	while (currentFloor >= targetFloor) {
-		setCurrentFloor(currentFloor -= 1);
 		i = 0;
 		std::cout << "Current floor is: " << currentFloor << std::endl;
-		while (i < waitingList.size() && elevatorCarriage.size() < 10) {
+		while (i < waitingList.size() && elevatorCarriage.size() < 9) {
 
 			if (waitingList[i].currentFloor == currentFloor && waitingList[i].desiredFloor < currentFloor) {
 				elevatorCarriage.push_back(waitingList[i]);// If person is on current floor and wants to go to floor that is at or before target floor elevator picks them up
@@ -125,17 +126,15 @@ void elevator::moveDownAndCheckEachFloor(KW::vector<person> &waitingList) {
 				elevatorCarriage.erase(i);
 				std::cout << "Num of people in the elevator: " << elevatorCarriage.size() << std::endl;
 				std::cout << "Num of people in the waitlist: " << waitingList.size() << std::endl;
-				if ((elevatorCarriage.size() == 0) && (waitingList.size() == 0)) { //Only need to check at target floor bc otherwise there will always be sb. in the carriage.
-					std::cout << "Nobody in the carriage and waitlist. End of program" << std::endl;
-					currentFloor = 0; //Elevator goes to ground floor when everybody gets off and there is no request because ground floor is the most used floor.
-					std::cout << "Elevator is back on the ground floor." << std::endl;
-					exit(0);
-				}
 			}
 			else {
 				i++;
 			}
 		}
+		/*
+		Moved this to bottom so that the floor the elevator started on is checked
+		*/
+		setCurrentFloor(currentFloor -= 1);
 	}
 }
 
