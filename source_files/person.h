@@ -5,7 +5,7 @@ public:
 	int currentFloor;
 	int desiredFloor;
 	int ID;
-	int floorsTraveled;
+	std::chrono::duration<double> timeWaited;
 	person(int x, int y, int z);
 	person();
 
@@ -13,13 +13,13 @@ public:
 
 	void setDesiredFloor(int x);
 
-	void setWaitTime(int x);
+	void setWaitTime(std::chrono::duration<double> x);
 
 	int getCurrentFloor() const;
 
 	int getDesiredFloor() const;
 
-	int getWaitTime();
+	std::chrono::duration<double> getWaitTime();
 };
 
 void person::setCurrentFloor(int x) {
@@ -30,8 +30,8 @@ void person::setDesiredFloor(int x) {
 	desiredFloor = x;
 }
 
-void person::setWaitTime(int x) {
-	floorsTraveled = x;
+void person::setWaitTime(std::chrono::duration<double> x) {
+	timeWaited = x;
 }
 
 int person::getCurrentFloor() const {
@@ -42,20 +42,18 @@ int person::getDesiredFloor() const {
 	return desiredFloor;
 }
 
-int person::getWaitTime() {
-	return floorsTraveled;
+std::chrono::duration<double> person::getWaitTime() {
+	return timeWaited;
 }
 
 person::person(int x, int y, int z) {
 	currentFloor = x;
 	desiredFloor = y;
 	ID = z;
-	floorsTraveled = 0;
 }
 
 person::person() {
 	currentFloor = 0;
 	desiredFloor = 0;
 	ID = 0;
-	floorsTraveled = 0;
 }
